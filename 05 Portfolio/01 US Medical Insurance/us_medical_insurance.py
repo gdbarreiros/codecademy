@@ -65,7 +65,7 @@ plt.axvline(x = np.quantile(df_insurance['children'], 0.5), color = 'black', lab
 plt.legend()
 plt.show()
 
-# Com base nas distribuições, é possível que os BMIs são os dados que mais se aproximam de uma 
+# Com base nas distribuições, é possível perceber que os BMIs são os dados que mais se aproximam de uma 
 # distribuição normal (gaussiana). As idades praticamente não possuem variação, com exceção da faixa
 # entre 20 a 23 anos que tem um número elevado de observações. Por fim, as cobranças e a 
 # quantidade de filhos possuem uma distribuição assimétrica à direita, o que significa que a moda < mediana < média
