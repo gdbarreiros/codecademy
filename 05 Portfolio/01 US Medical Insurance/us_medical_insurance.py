@@ -69,4 +69,53 @@ plt.show()
 # distribuição normal (gaussiana). As idades praticamente não possuem variação, com exceção da faixa
 # entre 20 a 23 anos que tem um número elevado de observações. Por fim, as cobranças e a 
 # quantidade de filhos possuem uma distribuição assimétrica à direita, o que significa que a moda < mediana < média
+
 # %%
+# Seguindo algumas sugestões propostas no site do Codecademy, vamos realizar algumas análises um pouco 
+# mais específicas
+
+# Em primeiro lugar, vamos verificar como está a distribuição especial do nosso dataset
+    # - Vamos ver quais são as regiões distintas
+
+print(df_insurance['region'].unique())
+
+# ['southwest' 'southeast' 'northwest' 'northeast']
+
+# Vamos ver qual dessas regiões possui mais pessoas. Podemos fazer isso agrupando o conjunto de dados 
+# pela coluna 'region' e depois usando a função de agregação count. Usamos um subconjunto do dataframe, 
+# já que se usássemos ele inteiro as informações se repetiriam ao longo das colunas. Depois disso, renomeamos
+# a coluna para se chamar 'count' e ordenamos os valores do menos para o maior
+
+df_insurance_grouped = df_insurance[['region', 'age']].groupby(['region']).count()
+df_insurance_grouped = df_insurance_grouped.rename(columns = {'age': 'count'})
+df_insurance_grouped = df_insurance_grouped.sort_values(by = ['count'], ascending = False)
+df_insurance_grouped
+
+# Com isso, podemos ver que a região que possui mais observações nesse conjunto de dados é southeast, 
+# com 364 observações
+
+# %%
+# Em segundo lugar, vamos avaliar qual a impacto do hábito do cigarro nos custos do seguro médico
+# Vamos dividir o dataframe em fumantes x não-fumantes
+
+df_non_smokers = df_insurance[df_insurance['smoker'] != 'yes']
+df_smokers = df_insurance[df_insurance['smoker'] == 'yes']
+
+# A quantidade de pessoas não-fumantes nesse conjunto de dados é muito maior (por volta de 5x) que a 
+# quantidade de pessoas fumantes, o que pode invalidar nossas conclusões. O ideal seria termos uma 
+# distribuição equivalente entre os dois conjuntos. De toda forma, vamos seguir com as análises
+
+df_joined = pd.DataFrame()
+df_joined['non_smoker_charges'] = df_non_smokers.agg({'charges': ['mean', 'median', 'min', 'max', 'skew']})
+df_joined['smoker_charges'] = df_smokers.agg({'charges': ['mean', 'median', 'min', 'max', 'skew']})
+df_joined['diff'] = df_joined['smoker_charges'] - df_joined['non_smoker_charges']
+df_joined
+
+# Com base nessa análise, lembrando dos apontamentos anteriores, é notável a diferença no custo do seguro 
+# médico de pessoas fumantes x pessoas não-fumantes. Em média, pessoas que não fumam pagam ~U$27k a menos 
+# que pessoas fumantes, um número bastante impressionante
+
+#%%
+# Além dessas análises, eu também gostaria de calcular qual o coeficiente de correlação de Pearson das variáveis
+# qualitativas em relação ao custo ('charges') e também plotar um gráfico de dispersão, para visualiza-la graficamente
+
