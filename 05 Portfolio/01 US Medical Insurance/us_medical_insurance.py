@@ -6,6 +6,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sn
+
 df_insurance = pd.read_csv('insurance.csv')
 
 #%%
@@ -119,3 +121,6 @@ df_joined
 # Além dessas análises, eu também gostaria de calcular qual o coeficiente de correlação de Pearson das variáveis
 # qualitativas em relação ao custo ('charges') e também plotar um gráfico de dispersão, para visualiza-la graficamente
 
+correlation = df_insurance.corr()
+plot = sn.heatmap(correlation, annot = True, fmt=".1f", linewidths=.6)
+plot
