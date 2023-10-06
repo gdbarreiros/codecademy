@@ -124,3 +124,91 @@ df_joined
 correlation = df_insurance.corr()
 plot = sn.heatmap(correlation, annot = True, fmt=".1f", linewidths=.6)
 plot
+
+# Se observarmos a última coluna do heatmap, teremos os coeficientes de correlação das variáveis quantitativas com
+# a variável 'charges'. Claramente não há uma correlação forte (nem fraca) entre as variáveis, talvez uma correlação
+# positiva fraca entre 'charges' e 'age' 
+
+#%%
+#Vamos plotar os gráficos de dispersão, apenas para visualizar as relações
+
+plt.scatter(df_insurance['age'], df_insurance['charges'])
+plt.title('Relação entre cobrança x idade')
+plt.show()
+
+plt.scatter(df_insurance['bmi'], df_insurance['charges'])
+plt.title('Relação entre cobrança x bmi')
+plt.show()
+
+plt.scatter(df_insurance['children'], df_insurance['charges'])
+plt.title('Relação entre cobrança x filhos')
+plt.show()
+
+#%%
+#Vamos transformar a coluna 'smoker' em dummies (binária) e ver se conseguimos estabelecer alguma correlação
+
+df_insurance_dummy = pd.get_dummies(df_insurance, columns = ['smoker'])
+df_insurance_dummy = df_insurance_dummy.drop(columns = ['smoker_no'])
+df_insurance_dummy = df_insurance_dummy.rename(columns = {'smoker_yes': 'smoker'})
+df_insurance_dummy = df_insurance_dummy[['age',	'sex', 'bmi', 'children', 'region', 'smoker', 'charges']]
+
+# Vamos calcular a correlação novamente
+
+correlation = df_insurance_dummy.corr()
+plot = sn.heatmap(correlation, annot = True, fmt=".1f", linewidths=.6)
+plot
+
+# Nesse caso, conseguimos ver que a correlação entre a cobrança do seguro médico e o hábito do cigarro é forte 
+# positiva, o que significa que fumar ou não possui uma forte influência no total pago pelo usuário. 
+
+#%% 
+# Vamos analisar o gráfico de dispersão
+
+plt.scatter(df_insurance_dummy['smoker'], df_insurance['charges'])
+plt.title('Relação entre cobrança x hábito do cigarro')
+plt.show()
+
+#%%
+# E se combinarmos os gráficos de dispersão da idade e do cigarro?
+
+plt.scatter(df_insurance_dummy['smoker'], df_insurance['charges'])
+plt.scatter(df_insurance['age'], df_insurance['charges'], c = 'red')
+plt.title('Relação entre cobrança x hábito do cigarro x idade')
+plt.show()
+
+# Esse plot não fica bom, porque a escala das idades é muito maior que a escala do cigarro. Vamos normaliza-la 
+# usando a fórmula 
+    # idade_normalizada = (idade - min_idade) / (max_idade - min_idade)
+
+min_age = df_insurance_dummy['age'].min() 
+max_age = df_insurance_dummy['age'].max()
+df_insurance_dummy['normalized_age'] = (df_insurance_dummy['age'] - min_age) / (max_age - min_age)
+
+#%%
+# Agora podemos plotar novamente o nosso gráfico combinado
+
+plt.scatter(df_insurance_dummy['normalized_age'], df_insurance['charges'], c = 'red')
+plt.scatter(df_insurance_dummy['smoker'], df_insurance['charges'])
+plt.title('Relação entre cobrança x hábito do cigarro x idade')
+plt.legend(labels =['Cobrança x idade', 'Cobrança x hábito de fumar'], loc = 'upper left')
+plt.ylim(0, df_insurance['charges'].max() * 1.2)
+plt.show()
+
+# Os dois combinados já apresentam um resultado bem mais interessante, onde é possível perceber 
+# uma tendência no aumento do preço conforme a idade aumenta e também nos casos em que a pessoa fuma
+
+#%%
+# Vamos criar uma função que normaliza uma determinada coluna categórica de um dataframe
+
+def normalizacao(df, coluna):
+    minimum = df[coluna].min()
+    maximum = df[coluna].max()
+    df['normalized'] = (df[coluna] - minimum) / (maximum - minimum)
+    return df
+
+df_teste = normalizacao(df_insurance, 'age')
+df_teste
+
+# A função realmente funciona
+
+#%%
