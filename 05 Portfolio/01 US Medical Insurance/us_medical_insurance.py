@@ -11,6 +11,18 @@ import seaborn as sn
 df_insurance = pd.read_csv('insurance.csv')
 
 #%%
+# Essa parte foi adicionada no fim do projeto, quando percebi que algumas partes do código estavam
+# repetitivas demais. Então decidi criar algumas funções
+
+# Vamos criar uma função que normaliza uma determinada coluna categórica de um dataframe
+
+def normalizacao(df, coluna):
+    minimum = df[coluna].min()
+    maximum = df[coluna].max()
+    df['normalized'] = (df[coluna] - minimum) / (maximum - minimum)
+    return df
+
+#%%
 # Verificando as 10 primeiras linhas do conjunto de dados
 
 df_insurance.head(10)
@@ -145,7 +157,7 @@ plt.title('Relação entre cobrança x filhos')
 plt.show()
 
 #%%
-#Vamos transformar a coluna 'smoker' em dummies (binária) e ver se conseguimos estabelecer alguma correlação
+# Vamos transformar a coluna 'smoker' em dummies (binária) e ver se conseguimos estabelecer alguma correlação
 
 df_insurance_dummy = pd.get_dummies(df_insurance, columns = ['smoker'])
 df_insurance_dummy = df_insurance_dummy.drop(columns = ['smoker_no'])
@@ -180,9 +192,8 @@ plt.show()
 # usando a fórmula 
     # idade_normalizada = (idade - min_idade) / (max_idade - min_idade)
 
-min_age = df_insurance_dummy['age'].min() 
-max_age = df_insurance_dummy['age'].max()
-df_insurance_dummy['normalized_age'] = (df_insurance_dummy['age'] - min_age) / (max_age - min_age)
+df_insurance_normalized = normalizacao(df_insurance, 'age')
+df_insurance_dummy['normalized_age'] = df_insurance_normalized['normalized']
 
 #%%
 # Agora podemos plotar novamente o nosso gráfico combinado
@@ -196,19 +207,3 @@ plt.show()
 
 # Os dois combinados já apresentam um resultado bem mais interessante, onde é possível perceber 
 # uma tendência no aumento do preço conforme a idade aumenta e também nos casos em que a pessoa fuma
-
-#%%
-# Vamos criar uma função que normaliza uma determinada coluna categórica de um dataframe
-
-def normalizacao(df, coluna):
-    minimum = df[coluna].min()
-    maximum = df[coluna].max()
-    df['normalized'] = (df[coluna] - minimum) / (maximum - minimum)
-    return df
-
-df_teste = normalizacao(df_insurance, 'age')
-df_teste
-
-# A função realmente funciona
-
-#%%
