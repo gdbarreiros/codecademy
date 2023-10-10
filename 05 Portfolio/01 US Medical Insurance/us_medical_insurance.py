@@ -42,6 +42,11 @@ df_insurance.tail(10)
     # - charges
 
 #%%
+# Usando describe() para gerar as principais estatísticas descritivas para as colunas quantitativas
+
+df_insurance.describe()
+
+#%%
 # Vamos calcular algumas estatísticas descritivas (média, mediana, máximo, mínimo, assimetria), 
 # ao menos para as colunas quantitativas
 
